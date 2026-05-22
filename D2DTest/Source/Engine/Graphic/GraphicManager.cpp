@@ -39,7 +39,7 @@ bool GraphicManager::Initialize()
 	return true;
 }
 
-void GraphicManager::Update()
+void GraphicManager::Update(float dt)
 {
 	// TODO : 렌더링 로직 추가
 }

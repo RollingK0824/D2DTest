@@ -2,6 +2,7 @@
 
 #include "Engine/Graphic/GraphicManager.h"
 #include "Engine/Resource/ResourceManager.h"
+#include "Engine/Core/TimeManager.h"
 
 bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int height)
 {
@@ -41,6 +42,13 @@ bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int heigh
 		return false;
 	}
 
+	if (!TimeManager::GetInstance()->Initialize())
+	{
+		MessageBoxW(nullptr, L"타임 매니저 초기화 실패", L"ERROR", MB_ICONERROR);
+		return false;
+	}
+	
+
 	if (!ResourceManager::GetInstance()->Initialize())
 	{
 		MessageBoxW(nullptr, L"리소스 매니저 초기화 실패", L"Error", MB_ICONERROR);
@@ -77,11 +85,24 @@ int GameApp::Run()
 		else
 		{
 			// TODO: 게임 업데이트 및 렌더링 로직 추가
+			
+			// 매 루프의 시작점에 DeltaTime 계산
+			TimeManager* pTime = TimeManager::GetInstance();
+			pTime->Update(0.0f);
 
-			GraphicManager::GetInstance()->Update();
+			float dt = pTime->GetDeltaTime();
+			float fixedDt = pTime->GetFixedDeltaTime();
+
+			while (pTime->AccumulateTime())
+			{
+				pTime->ConsumeFixedTick();
+			}
+
+			GraphicManager::GetInstance()->Update(dt);
 			GraphicManager::GetInstance()->BeginDraw();
 
 			GraphicManager::GetInstance()->Clear(D2D1::ColorF(D2D1::ColorF::White));
+
 #if ENABLE_RESOURCE_TEST
 			Test_Render();
 #endif // ENABLE_RESOURCE_TEST

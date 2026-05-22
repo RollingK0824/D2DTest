@@ -30,7 +30,7 @@ bool ResourceManager::Initialize()
 	return true;
 }
 
-void ResourceManager::Update()
+void ResourceManager::Update(float dt)
 {
 	// TODO : 리소스 관리 로직 추가 (예: 메모리 최적화, 리소스 갱신 등)
 }

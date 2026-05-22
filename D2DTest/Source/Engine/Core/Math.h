@@ -2,6 +2,6 @@
 
 struct Vector2
 {
-	int x = 0;
-	int y = 0;
+	float x = 0.0f;
+	float y = 0.0f;
 };

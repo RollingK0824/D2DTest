@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/IManager.h"
+#include "Engine/Core/Component.h"
 #include "Engine/Core/Singleton.h"
 #include <string>
 #include <unordered_map>
@@ -8,13 +8,14 @@
 struct ID2D1Bitmap;
 struct IWICImagingFactory;
 
-class ResourceManager : public Singleton<ResourceManager>, public IManager
+class ResourceManager : public Singleton<ResourceManager>, public Component
 {
 	friend class Singleton<ResourceManager>;
 
 public:
 	virtual bool Initialize() override;
-	virtual void Update() override;
+	virtual void FixedUpdate(float fixedDt) override {}
+	virtual void Update(float dt) override;
 	virtual void Release() override;
 
 	// 이미지를 읽어와 GPU 비트맵으로 등록
