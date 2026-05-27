@@ -125,9 +125,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Engine\Core\Component.h" />
+    <ClInclude Include="Source\Engine\Core\SceneManager.h" />
     <ClInclude Include="Source\Engine\Render\RenderSystem.h" />
     <ClInclude Include="Source\Engine\Core\EngineKernel.h" />
-    <ClInclude Include="Source\Engine\Core\Component.h" />
     <ClInclude Include="Source\Engine\Core\InputManager.h" />
     <ClInclude Include="Source\Engine\Core\Math.h" />
     <ClInclude Include="Source\Engine\Render\RenderCommand.h" />
@@ -139,6 +140,8 @@
     <ClInclude Include="Source\Engine\Core\TimeManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Engine\Core\Component.cpp" />
+    <ClCompile Include="Source\Engine\Core\SceneManager.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderSystem.cpp" />
     <ClCompile Include="Source\Engine\Core\EngineKernel.cpp" />
     <ClCompile Include="Source\Engine\Core\InputManager.cpp" />

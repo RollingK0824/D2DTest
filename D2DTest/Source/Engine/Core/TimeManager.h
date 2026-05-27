@@ -1,27 +1,27 @@
 #pragma once
 
-#include "Engine/Core/Component.h"
+#include "Engine/Core/IManager.h"
 #include "Engine/Core/Singleton.h"
 #include <windows.h>
 
-class TimeManager : public Singleton<TimeManager>, public Component
+class TimeManager : public Singleton<TimeManager>, public IManager
 {
 	friend class Singleton<TimeManager>;
 
 public:
 	// IManager 인터페이스 구현
 	virtual bool Initialize() override;
-	virtual void FixedUpdate(float fixedDt) override {}
 	virtual void Update(float dt) override;
+	virtual void FixedUpdate(float fixedDt) override {}
 	virtual void Release() override;
+	
+	bool AccumulateTime();
+	void ConsumeFixedTick();
 
 	// Getter
 	float GetDeltaTime() const { return m_deltaTime; }
 	float GetFixedDeltaTime() const { return m_fixedDeltaTime; }
 	unsigned int GetFPS() const { return m_fps; }
-
-	bool AccumulateTime();
-	void ConsumeFixedTick();
 
 private:
 	TimeManager() = default;

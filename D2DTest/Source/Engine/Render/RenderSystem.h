@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Engine/Core/Component.h"
+#include "Engine/Core/IManager.h"
 #include "Engine/Core/Singleton.h"
 #include "Engine/Render/RenderCommand.h"
 #include <vector>
 
-class RenderSystem : public Singleton<RenderSystem>, public Component
+class RenderSystem : public Singleton<RenderSystem>, public IManager
 {
 	friend class Singleton<RenderSystem>;
 
 public:
-	// Component 생명주기 인터페이스 구현
+	// IManager 인터페이스 구현
 	virtual bool Initialize() override;
-	virtual void FixedUpdate(float fixedDt) override {}
 	virtual void Update(float dt)override {}
+	virtual void FixedUpdate(float fixedDt) override {}
 	virtual void Release() override;
 
 	// 객체가 그리기 요청할 함수

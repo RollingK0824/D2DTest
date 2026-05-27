@@ -1,5 +1,5 @@
 ﻿#include "Engine/Core/GameApp.h"
-
+#include "Engine/Core/EngineKernel.h"
 #include "Engine/Graphic/GraphicManager.h"
 #include "Engine/Resource/ResourceManager.h"
 #include "Engine/Core/TimeManager.h"
@@ -69,6 +69,10 @@ bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int heigh
 
 int GameApp::Run()
 {
+	IManager* pKernel = EngineKernel::GetInstance();
+
+	
+
 	MSG msg = {};
 
 	while (m_bIsRunning)
@@ -86,7 +90,6 @@ int GameApp::Run()
 		{
 			// TODO: 게임 업데이트 및 렌더링 로직 추가
 			
-			// 매 루프의 시작점에 DeltaTime 계산
 			TimeManager* pTime = TimeManager::GetInstance();
 			pTime->Update(0.0f);
 
@@ -95,13 +98,14 @@ int GameApp::Run()
 
 			while (pTime->AccumulateTime())
 			{
+				EngineKernel::GetInstance()->FixedUpdate(fixedDt);
 				pTime->ConsumeFixedTick();
 			}
 
-			GraphicManager::GetInstance()->Update(dt);
-			GraphicManager::GetInstance()->BeginDraw();
+			EngineKernel::GetInstance()->Update(dt);
 
-			GraphicManager::GetInstance()->Clear(D2D1::ColorF(D2D1::ColorF::White));
+			EngineKernel::GetInstance()->Render();
+
 
 #if ENABLE_RESOURCE_TEST
 			Test_Render();
