@@ -1,19 +1,21 @@
 #pragma once
 
-#include "Engine/Core/IManager.h"
 #include "Engine/Core/Singleton.h"
+#include "Engine/Core/ISystem.h"
+#include "Engine/Core/IUpdatable.h"
 #include <windows.h>
 
-class TimeManager : public Singleton<TimeManager>, public IManager
+class TimeManager : public Singleton<TimeManager>, public ISystem, public IUpdatable
 {
 	friend class Singleton<TimeManager>;
 
 public:
-	// IManager 인터페이스 구현
+	// ISystem 인터페이스 구현
 	virtual bool Initialize() override;
-	virtual void Update(float dt) override;
-	virtual void FixedUpdate(float fixedDt) override {}
 	virtual void Release() override;
+
+	// IUpdatable 인터페이스 구현
+	virtual void Update(float dt) override;
 	
 	bool AccumulateTime();
 	void ConsumeFixedTick();

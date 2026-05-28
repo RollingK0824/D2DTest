@@ -1,13 +1,10 @@
 #pragma once
 
+#include "Engine/Core/Define.h"
 #include "Engine/Core/Singleton.h"
 #include <windows.h>
 
-#define ENABLE_RESOURCE_TEST 1
-
 struct ID2D1Bitmap;
-
-class GraphicManager;
 
 class GameApp : public Singleton<GameApp>
 {
@@ -24,6 +21,7 @@ public:
 	void Release();
 
 	HWND GetWindowHandle() const { return m_hWnd; }
+	HINSTANCE GetInstanceHandle() const { return m_hInstance; }
 
 private:
 	GameApp() = default;
@@ -35,13 +33,4 @@ private:
 	HWND m_hWnd = nullptr;
 	HINSTANCE m_hInstance = nullptr;
 	bool m_bIsRunning = true;
-
-private:
-	// ResourceManagerTEST용 함수 및 변수들
-#if ENABLE_RESOURCE_TEST
-	void Test_Initialize();
-	void Test_Render();
-
-	ID2D1Bitmap* m_pTestTexture = nullptr;
-#endif	// ENABLE_RESOURCE_TEST
 };

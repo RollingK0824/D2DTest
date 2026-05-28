@@ -1,35 +1,30 @@
 #pragma once
 #include "Engine/Core/Singleton.h"
-#include "Engine/Core/IManager.h"
+#include "Engine/Core/Define.h"
 #include <vector>
 
-struct EngineTime
-{
-	float deltaTime = 0.0f;
-	float fixedDeltaTime = 0.0f;
-	float accumulator = 0.0f;
-};
+class ISystem;
+class IUpdatable;
+class IRenderable;
 
-class EngineKernel : public Singleton<EngineKernel>, public IManager
+class EngineKernel : public Singleton<EngineKernel>
 {
 	friend class Singleton<EngineKernel>;
 
 public:
-	// IManager 인터페이스 구현
-	bool Initialize() override;
-	void FixedUpdate(float fixedDt) override;
-	void Update(float dt) override;
-	void Release() override;
+	bool Initialize();
+	void ProcessFrame();
+	void Release();
 
-	void ProcessFrame(const EngineTime& timeInfo);
-
-	void Render();
+	void RegisterManager(ISystem* manager);
 
 private:
 	EngineKernel() = default;
 	virtual ~EngineKernel() = default;
 
 private:
-	std::vector<IManager*> m_EngineManagers;
+	std::vector<ISystem*> m_vAllSystems;
+	std::vector<IUpdatable*> m_vUpdatableSystems;
+	std::vector<IRenderable*> m_vRenderableSystems;
 };
 

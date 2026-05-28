@@ -12,7 +12,11 @@ public:
 	IManager& operator=(IManager&&) = delete;
 
 	virtual bool Initialize() = 0;
-	virtual void Update(float dt) = 0;
-	virtual void FixedUpdate(float fiexdDt) = 0;
 	virtual void Release() = 0;
+
+	virtual void Update(float dt) {}
+	virtual void FixedUpdate(float fiexdDt) {}
+	virtual void LateUpdate(float dt) {};
+
+	virtual void Render() {};
 };

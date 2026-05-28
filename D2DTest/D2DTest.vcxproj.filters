@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine\Core\IManager.h">
-      <Filter>Source Files\Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Core\Singleton.h">
       <Filter>Source Files\Engine\Core</Filter>
     </ClInclude>
@@ -36,13 +33,10 @@
     <ClInclude Include="Source\Engine\Core\GameApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Resource\ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Engine\Core\InputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Engine\Core\Math.h">
+    <ClInclude Include="Source\Engine\Core\Define.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Engine\Core\TimeManager.h">
@@ -63,15 +57,27 @@
     <ClInclude Include="Source\Engine\Core\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Engine\Core\ISystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Core\IUpdatable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Core\IRenderable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Engine\Resource\ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ResourceTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Engine\Graphic\GraphicManager.cpp">
       <Filter>Source Files\Engine\Graphic</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\GameApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Engine\Core\InputManager.cpp">
@@ -92,5 +98,34 @@
     <ClCompile Include="Source\Engine\Core\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Engine\Resource\ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ResourceTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\character_ambrojoe.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\character_antonio.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemies2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemies2_0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemies2_1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemiesM.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemiesM_0.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

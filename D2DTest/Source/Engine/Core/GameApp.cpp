@@ -1,12 +1,25 @@
 ﻿#include "Engine/Core/GameApp.h"
 #include "Engine/Core/EngineKernel.h"
 #include "Engine/Graphic/GraphicManager.h"
+#include "Engine/Render/RenderSystem.h"
 #include "Engine/Resource/ResourceManager.h"
 #include "Engine/Core/TimeManager.h"
+
+#if ENABLE_RESOURCE_TEST
+#include "ResourceTest.h"
+#endif // ENABLE_RESOURCE_TEST
 
 bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int height)
 {
 	m_hInstance = hInstance;
+
+	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
+	if (FAILED(hr))
+	{
+		MessageBoxW(nullptr, L"OS COM 라이브러리 초기화 실패", L"Fatal Error", MB_ICONERROR);
+		return false;
+	}
 
 	// 1. 윈도우 클래스 등록
 	WNDCLASSEXW wc = {};
@@ -35,29 +48,21 @@ bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int heigh
 
 	if (!m_hWnd) return false;
 
-	// 4. 윈도우 창이 정상 개설된 직후 매니저 가동
-	if (!GraphicManager::GetInstance()->Initialize())
+	EngineKernel* kernel = EngineKernel::GetInstance();
+
+	kernel->RegisterManager(TimeManager::GetInstance());
+	kernel->RegisterManager(GraphicManager::GetInstance());
+	kernel->RegisterManager(RenderSystem::GetInstance());
+	kernel->RegisterManager(ResourceManager::GetInstance());
+
+	if (!EngineKernel::GetInstance()->Initialize())
 	{
-		MessageBoxW(nullptr, L"그래픽 매니저 초기화 실패", L"Error", MB_ICONERROR);
+		MessageBoxW(nullptr, L"EngineKernel 초기화 실패", L"Error", MB_ICONERROR);
 		return false;
 	}
-
-	if (!TimeManager::GetInstance()->Initialize())
-	{
-		MessageBoxW(nullptr, L"타임 매니저 초기화 실패", L"ERROR", MB_ICONERROR);
-		return false;
-	}
-	
-
-	if (!ResourceManager::GetInstance()->Initialize())
-	{
-		MessageBoxW(nullptr, L"리소스 매니저 초기화 실패", L"Error", MB_ICONERROR);
-		return false;
-	}
-
 #if ENABLE_RESOURCE_TEST
 	Test_Initialize();
-#endif // ENABLE_RESOURCE_TEST
+#endif // ENABLE_RESOURE_TEST
 
 	m_bIsRunning = true;
 
@@ -69,10 +74,6 @@ bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int heigh
 
 int GameApp::Run()
 {
-	IManager* pKernel = EngineKernel::GetInstance();
-
-	
-
 	MSG msg = {};
 
 	while (m_bIsRunning)
@@ -89,29 +90,7 @@ int GameApp::Run()
 		else
 		{
 			// TODO: 게임 업데이트 및 렌더링 로직 추가
-			
-			TimeManager* pTime = TimeManager::GetInstance();
-			pTime->Update(0.0f);
-
-			float dt = pTime->GetDeltaTime();
-			float fixedDt = pTime->GetFixedDeltaTime();
-
-			while (pTime->AccumulateTime())
-			{
-				EngineKernel::GetInstance()->FixedUpdate(fixedDt);
-				pTime->ConsumeFixedTick();
-			}
-
-			EngineKernel::GetInstance()->Update(dt);
-
-			EngineKernel::GetInstance()->Render();
-
-
-#if ENABLE_RESOURCE_TEST
-			Test_Render();
-#endif // ENABLE_RESOURCE_TEST
-
-			GraphicManager::GetInstance()->EndDraw();
+			EngineKernel::GetInstance()->ProcessFrame();
 		}
 	}
 
@@ -121,7 +100,9 @@ int GameApp::Run()
 void GameApp::Release()
 {
 	// TODO: 각종 해제 코드 추가
-	GraphicManager::GetInstance()->Release();
+	EngineKernel::GetInstance()->Release();
+
+	CoUninitialize();
 }
 
 LRESULT CALLBACK GameApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -135,62 +116,6 @@ LRESULT CALLBACK GameApp::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 	return DefWindowProcW(hWnd, message, wParam, lParam);
 }
-
-#if ENABLE_RESOURCE_TEST
-void GameApp::Test_Initialize()
-{
-	// ResourceManager를 통해 텍스처 로드
-	m_pTestTexture = ResourceManager::GetInstance()->LoadTexture(L"TestTexture",
-		L"Resources/character_antonio.png");
-
-	if (!m_pTestTexture)
-	{
-		MessageBoxW(nullptr, L"테스트 텍스처 로드 실패", L"Error", MB_ICONWARNING);
-	}
-}
-
-void GameApp::Test_Render()
-{
-	if (m_pTestTexture)
-	{
-		D2D1_SIZE_F imgSize = m_pTestTexture->GetSize();
-
-		D2D1_RECT_F destRect = D2D1::RectF(GraphicManager::GetInstance()->GetRenderTarget()->GetSize().width / 2 - imgSize.width / 2,
-			GraphicManager::GetInstance()->GetRenderTarget()->GetSize().height / 2 - imgSize.height / 2,
-			imgSize.width + GraphicManager::GetInstance()->GetRenderTarget()->GetSize().width / 2,
-			imgSize.height + GraphicManager::GetInstance()->GetRenderTarget()->GetSize().height / 2);
-		GraphicManager::GetInstance()->GetRenderTarget()->DrawBitmap(
-			m_pTestTexture,
-			destRect
-		);
-
-		ID2D1SolidColorBrush* pDebugBrush = nullptr;
-		HRESULT hr = GraphicManager::GetInstance()->GetRenderTarget()->CreateSolidColorBrush(
-			D2D1::ColorF(D2D1::ColorF::Red, 1.0f),
-			&pDebugBrush
-		);
-
-		if (SUCCEEDED(hr) && pDebugBrush)
-		{
-			GraphicManager::GetInstance()->GetRenderTarget()->DrawRectangle(destRect, pDebugBrush,2.0f);
-			GraphicManager::GetInstance()->GetRenderTarget()->DrawLine(
-				D2D1::Point2F(destRect.left, destRect.top),
-				D2D1::Point2F(destRect.right, destRect.bottom),
-				pDebugBrush, 1.0f
-			);
-
-			GraphicManager::GetInstance()->GetRenderTarget()->DrawLine(
-				D2D1::Point2F(destRect.right, destRect.top),
-				D2D1::Point2F(destRect.left, destRect.bottom),
-				pDebugBrush, 1.0f
-			);
-
-			pDebugBrush->Release();
-		}
-	}
-}
-#endif // ENABLE_RESOURCE_TEST
-
 
 int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,

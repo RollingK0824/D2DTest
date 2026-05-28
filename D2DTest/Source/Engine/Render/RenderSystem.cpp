@@ -13,7 +13,14 @@ void RenderSystem::SubmitCommand(const RenderCommand& command)
 	m_commands.push_back(command);
 }
 
-void RenderSystem::RenderAll()
+void RenderSystem::Release()
+{
+	m_commands.clear();
+	// 임시 vector를 만들어 swap 함수 종료 시 완전 삭제
+	std::vector<RenderCommand>().swap(m_commands);
+}
+
+void RenderSystem::Render()
 {
 	if (m_commands.empty())return;
 
@@ -40,33 +47,34 @@ void RenderSystem::RenderAll()
 		float scaleX = cmd.flipX ? -cmd.scaleX : cmd.scaleX;
 		float scaleY = cmd.flipY ? -cmd.scaleY : cmd.scaleY;
 
-		// 이미지의 자체 중심점 계산
+		// 이미지 회전 및 반전의 중심이 될 자체 로컬 중심점 계산
 		D2D1_POINT_2F localCenter = D2D1::Point2F(imgSize.width / 2.0f, imgSize.height / 2.0f);
 
-		// 행렬 연산 크기 -> 회전 -> 이동
+		// SRT (크기 배율 -> 회전 -> 월드 이동) 행렬 조합 연산
 		D2D1_MATRIX_3X2_F transformMatrix =
 			D2D1::Matrix3x2F::Scale(scaleX, scaleY, localCenter) *
 			D2D1::Matrix3x2F::Rotation(cmd.rotation, localCenter) *
-			D2D1::Matrix3x2F::Translation(cmd.position.x - imgSize.width / 2.0f, cmd.position.y - imgSize.height / 2.0f);
+			D2D1::Matrix3x2F::Translation(cmd.position.x - localCenter.x, cmd.position.y - localCenter.y);
 
 		// 최종 행렬 주입
 		pRT->SetTransform(transformMatrix);
 
-		D2D1_RECT_F localRect = D2D1::RectF(0.0f, 0.0f, imgSize.width, imgSize.height);
+		// 소스 영역 전체 지정 구조 설정
+		D2D1_RECT_F srcRect = D2D1::RectF(0.0f, 0.0f, imgSize.width, imgSize.height);
+		D2D1_RECT_F destRect = D2D1::RectF(0.0f, 0.0f, imgSize.width, imgSize.height);
 
-		// 이미지 출력
-		pRT->DrawBitmap(cmd.pTexture, localRect, cmd.opacity);
+		// 최종 렌더 타겟에 스프라이트 드로우 명령 하달
+		pRT->DrawBitmap(
+			cmd.pTexture,
+			destRect,
+			cmd.opacity, // 알파 브렌딩 투명도 수치 적용
+			D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, // 픽셀 보간 모드 설정
+			srcRect
+		);
 	}
 
 	// RenderTarget 원상 복구 
 	pRT->SetTransform(originMatrix);
 
 	m_commands.clear();
-}
-
-void RenderSystem::Release()
-{
-	m_commands.clear();
-	// 임시 vector를 만들어 swap 함수 종료 시 완전 삭제
-	std::vector<RenderCommand>().swap(m_commands);
 }

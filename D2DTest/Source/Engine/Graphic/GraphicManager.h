@@ -1,21 +1,24 @@
 #pragma once
 
-#include "Engine/Core/IManager.h"
 #include "Engine/Core/Singleton.h"	
+#include "Engine/Core/ISystem.h"
+#include "Engine/Core/IRenderable.h"
 
 #include <d2d1.h>
 #pragma comment(lib, "d2d1.lib")
 
-class GraphicManager : public Singleton<GraphicManager>, public IManager
+class GraphicManager : public Singleton<GraphicManager>, public ISystem, public IRenderable
 {
 	friend class Singleton<GraphicManager>;
 
 public:
-	// IManager 인터페이스 구현
+	// ISystem 인터페이스 구현
 	virtual bool Initialize() override;
-	virtual void Update(float dt) override;
-	virtual void FixedUpdate(float fixedDt) override {}
 	virtual void Release() override;
+
+	// IRenderable 구현
+	virtual void PreRender() override;
+	virtual void PostRender() override;
 
 	ID2D1Factory* GetFactory() const { return m_pFactory; }
 	ID2D1HwndRenderTarget* GetRenderTarget() const { return m_pRenderTarget; }

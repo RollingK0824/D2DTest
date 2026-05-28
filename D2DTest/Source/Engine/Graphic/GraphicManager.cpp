@@ -39,11 +39,6 @@ bool GraphicManager::Initialize()
 	return true;
 }
 
-void GraphicManager::Update(float dt)
-{
-	// TODO : 렌더링 로직 추가
-}
-
 void GraphicManager::BeginDraw()
 {
 	if (m_pRenderTarget)
@@ -93,4 +88,45 @@ void GraphicManager::Release()
 		m_pFactory->Release();
 		m_pFactory = nullptr;
 	}
+}
+
+void GraphicManager::PreRender()
+{
+	if (m_pRenderTarget)
+	{
+		m_pRenderTarget->BeginDraw();
+
+		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+	}
+}
+
+void GraphicManager::PostRender()
+{
+	if (m_pRenderTarget)
+	{
+		HRESULT hr = m_pRenderTarget->EndDraw();
+
+		if (hr == D2DERR_RECREATE_TARGET)
+		{
+			// 다음 프레임에 다시 안전하게 생성될 수 있도록 기존 타겟을 릴리즈합니다.
+			if (m_pRenderTarget)
+			{
+				m_pRenderTarget->Release();
+				m_pRenderTarget = nullptr;
+			}
+
+			// 다시 생성 시도
+			RECT rc;
+			HWND hWnd = GameApp::GetInstance()->GetWindowHandle();
+			GetClientRect(hWnd, &rc);
+			D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
+
+			m_pFactory->CreateHwndRenderTarget(
+				D2D1::RenderTargetProperties(),
+				D2D1::HwndRenderTargetProperties(hWnd, size),
+				&m_pRenderTarget
+			);
+		}
+	}
+
 }

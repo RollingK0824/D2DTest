@@ -1,47 +1,80 @@
-﻿#include "EngineKernel.h"
+﻿#include "Engine/Core/EngineKernel.h"
+#include "Engine/Core/ISystem.h"
+#include "Engine/Core/IUpdatable.h"
+#include "Engine/Core/IRenderable.h"
+#include "Engine/Core/TimeManager.h"
+
+#if ENABLE_RESOURCE_TEST
+#include "ResourceTest.h"
+#endif // ENABLE_RESOURCE_TEST
 
 bool EngineKernel::Initialize()
 {
-
-	return false;
-}
-
-void EngineKernel::FixedUpdate(float fixedDt)
-{
-	for (IManager* manager : m_EngineManagers)
+	for (const auto& it : m_vAllSystems)
 	{
-		manager->FixedUpdate(fixedDt);
+		if (!it->Initialize())return false;
 	}
+	return true;
 }
 
-void EngineKernel::Update(float dt)
-{
-	for (IManager* manager : m_EngineManagers)
-	{
-		manager->Update(dt);
-	}
-}
 
 void EngineKernel::Release()
 {
-	for (auto it = m_EngineManagers.rbegin(); it != m_EngineManagers.rend(); ++it)
+	for (auto it = m_vAllSystems.rbegin(); it != m_vAllSystems.rend(); ++it)
 	{
 		(*it)->Release();
 	}
+
+	m_vAllSystems.clear();
+	m_vUpdatableSystems.clear();
+	m_vRenderableSystems.clear();
 }
 
-void EngineKernel::ProcessFrame(const EngineTime& timeInfo)
+void EngineKernel::ProcessFrame()
 {
-	float remainingTime = timeInfo.accumulator;
+	TimeManager* pTime = TimeManager::GetInstance();
 	
+	pTime->Update(0.0f);
 
-	this->FixedUpdate(timeInfo.fixedDeltaTime);
+	float dt = pTime->GetDeltaTime();
+	float fixedDt = pTime->GetFixedDeltaTime();
 
-	this->Update(timeInfo.deltaTime);
+	while (pTime->AccumulateTime())
+	{
+		for (auto* sys : m_vUpdatableSystems) sys->FixedUpdate(fixedDt);
+		pTime->ConsumeFixedTick();
+	}
 
-	this->Render();
+#if ENABLE_RESOURCE_TEST
+	Test_Update(dt);
+#endif // ENABLE_RESOURCE_TEST
+
+
+	for (auto* sys : m_vUpdatableSystems)sys->Update(dt);
+	for (auto* sys : m_vUpdatableSystems)sys->LateUpdate(dt);
+
+	for (auto* sys : m_vRenderableSystems)sys->PreRender();
+#if ENABLE_RESOURCE_TEST
+	Test_Render();
+#endif // ENABLE_RESOURCE_TEST
+
+	for (auto* sys : m_vRenderableSystems)sys->Render();
+	for (auto* sys : m_vRenderableSystems)sys->PostRender();
 }
 
-void EngineKernel::Render()
+
+void EngineKernel::RegisterManager(ISystem* manager)
 {
+	if (manager == nullptr)return;
+	m_vAllSystems.push_back(manager);
+
+	if (auto* updatable = dynamic_cast<IUpdatable*>(manager))
+	{
+		m_vUpdatableSystems.push_back(updatable);
+	}
+
+	if (auto* renderable = dynamic_cast<IRenderable*>(manager))
+	{
+		m_vRenderableSystems.push_back(renderable);
+	}
 }

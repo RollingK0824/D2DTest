@@ -10,29 +10,19 @@
 bool ResourceManager::Initialize()
 {
 	// WIC Imaging Factory 생성
-	HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
-	if (FAILED(hr))
-	{
-		MessageBoxW(nullptr, L"WIC Factory 초기화 실패", L"Error", MB_ICONERROR);
-		return false;
-	}
-	hr = CoCreateInstance(
+	HRESULT hr = CoCreateInstance(
 		CLSID_WICImagingFactory,
 		nullptr,
 		CLSCTX_INPROC_SERVER,
 		IID_PPV_ARGS(&m_pWICFactory)
 	);
+
 	if (FAILED(hr))
 	{
 		MessageBoxW(nullptr, L"WIC Factory 생성 실패", L"Error", MB_ICONERROR);
 		return false;
 	}
 	return true;
-}
-
-void ResourceManager::Update(float dt)
-{
-	// TODO : 리소스 관리 로직 추가 (예: 메모리 최적화, 리소스 갱신 등)
 }
 
 ID2D1Bitmap* ResourceManager::LoadTexture(const std::wstring& key, const std::wstring& filePath)
@@ -125,6 +115,7 @@ void ResourceManager::Release()
 		if (pair.second)
 		{
 			pair.second->Release();
+			pair.second = nullptr;
 		}
 	}
 
@@ -136,6 +127,4 @@ void ResourceManager::Release()
 		m_pWICFactory->Release();
 		m_pWICFactory = nullptr;
 	}
-
-	CoUninitialize();
 }

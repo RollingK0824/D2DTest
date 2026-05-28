@@ -1,11 +1,11 @@
 #pragma once
 #include <d2d1.h>
-#include "Engine/Core/Math.h"
+#include "Engine/Core/Define.h"
 
 struct RenderCommand
 {
 	ID2D1Bitmap* pTexture = nullptr;	// 그릴 이미지 포인터
-	Vector2 position;					// 월드 좌표계상의 위치
+	Pos2D position;					// 월드 좌표계상의 위치
 	float rotation = 0.0f;				// 회전 값
 	float scaleX = 1.0f;				// X축 크기 배율
 	float scaleY = 1.0f;				// Y축 크기 배율
