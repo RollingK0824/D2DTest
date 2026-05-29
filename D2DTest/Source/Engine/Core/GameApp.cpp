@@ -4,6 +4,9 @@
 #include "Engine/Render/RenderSystem.h"
 #include "Engine/Resource/ResourceManager.h"
 #include "Engine/Core/TimeManager.h"
+#include "Engine/Core/InputManager.h"
+#include "Engine/Core/RandomManager.h"
+#include "Manager/GameManager.h"
 
 #if ENABLE_RESOURCE_TEST
 #include "ResourceTest.h"
@@ -54,6 +57,9 @@ bool GameApp::Initialize(HINSTANCE hInstance, int nCmdShow, int width, int heigh
 	kernel->RegisterManager(GraphicManager::GetInstance());
 	kernel->RegisterManager(RenderSystem::GetInstance());
 	kernel->RegisterManager(ResourceManager::GetInstance());
+	kernel->RegisterManager(InputManager::GetInstance());
+	kernel->RegisterManager(RandomManager::GetInstance());
+	kernel->RegisterManager(GameManager::GetInstance());
 
 	if (!EngineKernel::GetInstance()->Initialize())
 	{
@@ -122,8 +128,8 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 	_In_ LPSTR lpCmdLine,
 	_In_ int nCmdShow)
 {
-	// 1. 엔진 커널 초기화 (800*600 해상도)
-	if (!GameApp::GetInstance()->Initialize(hInstance, nCmdShow, 800, 600))
+	// 1. 엔진 커널 초기화
+	if (!GameApp::GetInstance()->Initialize(hInstance, nCmdShow, SCREEN_WIDTH, SCREEN_HEIGHT))
 	{
 		return 0;
 	}

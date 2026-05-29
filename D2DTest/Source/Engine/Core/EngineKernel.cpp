@@ -17,7 +17,6 @@ bool EngineKernel::Initialize()
 	return true;
 }
 
-
 void EngineKernel::Release()
 {
 	for (auto it = m_vAllSystems.rbegin(); it != m_vAllSystems.rend(); ++it)
@@ -57,7 +56,6 @@ void EngineKernel::ProcessFrame()
 #if ENABLE_RESOURCE_TEST
 	Test_Render();
 #endif // ENABLE_RESOURCE_TEST
-
 	for (auto* sys : m_vRenderableSystems)sys->Render();
 	for (auto* sys : m_vRenderableSystems)sys->PostRender();
 }

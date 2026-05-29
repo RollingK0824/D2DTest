@@ -30,11 +30,20 @@ bool GraphicManager::Initialize()
 		D2D1::HwndRenderTargetProperties(hWnd, size),
 		&m_pRenderTarget
 	);
+
 	if(FAILED(hr))
 	{
 		MessageBoxW(nullptr, L"Render Target 생성 실패", L"Error", MB_ICONERROR);
 		return false;
 	}
+
+	hr = DWriteCreateFactory(
+		DWRITE_FACTORY_TYPE_SHARED,
+		__uuidof(IDWriteFactory),
+		reinterpret_cast<IUnknown**>(&m_pWriteFactroy)
+	);
+
+	if (FAILED(hr))return false;
 
 	return true;
 }
@@ -88,6 +97,11 @@ void GraphicManager::Release()
 		m_pFactory->Release();
 		m_pFactory = nullptr;
 	}
+	if (m_pWriteFactroy)
+	{
+		m_pWriteFactroy->Release();
+		m_pWriteFactroy = nullptr;
+	}
 }
 
 void GraphicManager::PreRender()
@@ -96,7 +110,7 @@ void GraphicManager::PreRender()
 	{
 		m_pRenderTarget->BeginDraw();
 
-		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+		m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 	}
 }
 

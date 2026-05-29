@@ -125,10 +125,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Engine\Core\Component.h" />
+    <ClInclude Include="Source\Engine\Core\RandomManager.h" />
+    <ClInclude Include="Source\Manager\GameManager.h" />
+    <ClInclude Include="Source\Engine\Render\RenderGizmo.h" />
     <ClInclude Include="Source\Engine\Core\IRenderable.h" />
     <ClInclude Include="Source\Engine\Core\ISystem.h" />
     <ClInclude Include="Source\Engine\Core\IUpdatable.h" />
+    <ClInclude Include="Source\Engine\Sprite\Sprite.h" />
     <ClInclude Include="Source\ResourceTest.h" />
     <ClInclude Include="Source\Engine\Core\SceneManager.h" />
     <ClInclude Include="Source\Engine\Render\RenderSystem.h" />
@@ -143,7 +146,8 @@
     <ClInclude Include="Source\Engine\Resource\ResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Engine\Core\Component.cpp" />
+    <ClCompile Include="Source\Engine\Core\RandomManager.cpp" />
+    <ClCompile Include="Source\Manager\GameManager.cpp" />
     <ClCompile Include="Source\ResourceTest.cpp" />
     <ClCompile Include="Source\Engine\Core\SceneManager.cpp" />
     <ClCompile Include="Source\Engine\Render\RenderSystem.cpp" />

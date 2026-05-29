@@ -4,6 +4,7 @@
 #include "Engine/Core/ISystem.h"
 #include "Engine/Core/IRenderable.h"
 
+#include <dwrite.h>
 #include <d2d1.h>
 #pragma comment(lib, "d2d1.lib")
 
@@ -21,6 +22,7 @@ public:
 	virtual void PostRender() override;
 
 	ID2D1Factory* GetFactory() const { return m_pFactory; }
+	IDWriteFactory* GetWriteFactory() const { return m_pWriteFactroy; }
 	ID2D1HwndRenderTarget* GetRenderTarget() const { return m_pRenderTarget; }
 
 	void BeginDraw();
@@ -33,5 +35,6 @@ private:
 	virtual ~GraphicManager() = default;
 
 	ID2D1Factory* m_pFactory = nullptr;
+	IDWriteFactory* m_pWriteFactroy = nullptr;
 	ID2D1HwndRenderTarget* m_pRenderTarget = nullptr;
 };
